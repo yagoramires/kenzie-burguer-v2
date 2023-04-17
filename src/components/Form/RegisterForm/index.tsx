@@ -1,7 +1,9 @@
+import { useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { RegisterSchema, TRegisterValues } from './RegisterSchema';
+import { UserContext } from '../../../contexts/UserContext';
 
 import Input from '../Input';
 import { StyledButton } from '../../../styles/button';
@@ -14,8 +16,10 @@ const RegisterForm = () => {
     formState: { errors },
   } = useForm<TRegisterValues>({ resolver: zodResolver(RegisterSchema) });
 
+  const { registerUser, loading } = useContext(UserContext);
+
   const handleRegister: SubmitHandler<TRegisterValues> = (formData) => {
-    console.log(formData);
+    registerUser(formData);
   };
 
   return (
@@ -25,7 +29,6 @@ const RegisterForm = () => {
         register={register}
         type='text'
         label='Nome'
-        placeholder='Digite seu nome'
         error={errors?.name?.message}
       />
       <Input
@@ -33,7 +36,6 @@ const RegisterForm = () => {
         register={register}
         type='text'
         label='E-mail'
-        placeholder='Digite seu e-mail'
         error={errors?.email?.message}
       />
       <Input
@@ -41,7 +43,6 @@ const RegisterForm = () => {
         register={register}
         type='password'
         label='Senha'
-        placeholder='Digite sua senha'
         error={errors?.password?.message}
       />
       <Input
@@ -49,11 +50,10 @@ const RegisterForm = () => {
         register={register}
         type='password'
         label='Confirmação de senha'
-        placeholder='Confirme sua senha'
         error={errors?.confirmPassword?.message}
       />
       <StyledButton $buttonSize='default' $buttonStyle='gray'>
-        Cadastrar
+        {loading ? 'Cadastrando ...' : 'Cadastrar'}
       </StyledButton>
     </StyledForm>
   );
