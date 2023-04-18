@@ -1,15 +1,16 @@
 import { useContext } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { UserContext } from './contexts/UserContext';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ShopPage from './pages/ShopPage';
+import { Loading } from './components/Loading';
 
 const Router = () => {
-  const { user, loading } = useContext(UserContext);
+  const { loading } = useContext(UserContext);
 
-  if (loading) return <p>Loading ..</p>;
+  if (loading) return <Loading />;
 
   return (
     <Routes>

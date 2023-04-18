@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import { api } from '../services/api';
 
 interface ProductsProviderProps {
@@ -10,6 +10,7 @@ interface ProductContextProps {
   filteredProductsList: Array<IProduct>;
   setProductsList: React.Dispatch<React.SetStateAction<IProduct[]>>;
   setFilteredProductsList: React.Dispatch<React.SetStateAction<IProduct[]>>;
+  productsFetch: () => Promise<void>;
 }
 
 export interface IProduct {
@@ -38,14 +39,11 @@ export const ProductsProvider = ({ children }: ProductsProviderProps) => {
       });
 
       setProductsList(res.data);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      console.error(e);
     }
   };
 
-  useEffect(() => {
-    productsFetch();
-  }, []);
   return (
     <ProductsContext.Provider
       value={{
@@ -53,6 +51,7 @@ export const ProductsProvider = ({ children }: ProductsProviderProps) => {
         filteredProductsList,
         setProductsList,
         setFilteredProductsList,
+        productsFetch,
       }}
     >
       {children}

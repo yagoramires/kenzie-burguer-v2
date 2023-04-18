@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { TLoginValues } from '../components/Form/LoginForm/LoginSchema';
 import { TRegisterValues } from '../components/Form/RegisterForm/RegisterSchema';
 import { api } from '../services/api';
@@ -47,8 +48,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
       setUser(data);
       navigate('/shop');
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      toast.error(e.response.data);
     } finally {
       setLoading(false);
     }
@@ -71,8 +72,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
       setUser(data);
       navigate('/shop');
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      toast.error(e.response.data);
     } finally {
       setLoading(false);
     }
@@ -104,9 +105,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
         navigate('/shop');
       }
-    } catch (e) {
+    } catch (e: any) {
       navigate('/');
-      console.log(e);
     } finally {
       setLoading(false);
     }
