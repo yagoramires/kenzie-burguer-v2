@@ -18,6 +18,7 @@ interface UserContextProps {
   user: IUser | undefined;
   loginUser: (userData: TLoginValues) => Promise<void>;
   registerUser: (userData: TRegisterValues) => Promise<void>;
+  logoutUser: () => void;
   loading: boolean;
 }
 
@@ -25,7 +26,7 @@ export const UserContext = createContext({} as UserContextProps);
 
 export const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<IUser>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -36,12 +37,14 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       const res = await api.post('/login', userData);
 
       localStorage.setItem('@TOKEN', res.data.accessToken);
+      localStorage.setItem('@USER', JSON.stringify(res.data.user));
 
       const data = {
         id: res.data.user.id,
         email: res.data.user.email,
         name: res.data.user.name,
       };
+
       setUser(data);
       navigate('/shop');
     } catch (e) {
@@ -58,12 +61,14 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       const res = await api.post('/users ', userData);
 
       localStorage.setItem('@TOKEN', res.data.accessToken);
+      localStorage.setItem('@USER', JSON.stringify(res.data.user));
 
       const data = {
         id: res.data.user.id,
         email: res.data.user.email,
         name: res.data.user.name,
       };
+
       setUser(data);
       navigate('/shop');
     } catch (e) {
@@ -73,20 +78,37 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     }
   };
 
+  const logoutUser = () => {
+    localStorage.removeItem('@TOKEN');
+    localStorage.removeItem('@USER');
+
+    navigate('/');
+  };
+
   const validateToken = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem('@TOKEN');
+      const data = localStorage.getItem('@USER');
 
-      await api.get('/products', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      if (data) {
+        setUser(JSON.parse(data));
+      }
 
-      navigate('/shop');
+      if (data && token) {
+        await api.get('/products', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        navigate('/shop');
+      }
     } catch (e) {
       navigate('/');
       console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,7 +117,9 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, loginUser, registerUser, loading }}>
+    <UserContext.Provider
+      value={{ user, loginUser, registerUser, logoutUser, loading }}
+    >
       {children}
     </UserContext.Provider>
   );

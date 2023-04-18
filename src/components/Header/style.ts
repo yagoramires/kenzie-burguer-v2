@@ -24,6 +24,19 @@ export const StyledHeader = styled.header`
         gap: 15px;
 
         button {
+          position: relative;
+          > p {
+            width: 20px;
+            height: 20px;
+            background-color: ${({ theme }) => theme.colors.primary};
+            color: ${({ theme }) => theme.colors.gray0};
+            padding: 4px;
+            font-size: 12px;
+            border-radius: 100%;
+            position: absolute;
+            top: -10px;
+            right: -6px;
+          }
           background: transparent;
           color: ${({ theme }) => theme.colors.gray150};
           transition: 0.3s;
